@@ -1,0 +1,3 @@
+- git:
+    local-name: VINS-RGBD
+    uri: https://github.com/STAR-Center/VINS-RGBD.git

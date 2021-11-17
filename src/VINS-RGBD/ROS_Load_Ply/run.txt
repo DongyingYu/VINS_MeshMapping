@@ -1,0 +1,4 @@
+通过ROS rviz加载ply格式的地图进行展示；
+
+运行：
+roslaunch load_ply Load_ply.launch

@@ -1,0 +1,67 @@
+verbose: false
+debug: true
+auto_pause_rosbag: false
+
+submap_creation_interval: 10
+subscriber_queue_length: 10
+
+input_odom_frame: "odom"
+input_base_link_frame: "imu"
+output_mission_frame: "mission"
+output_odom_frame: "odom"
+output_base_link_frame: "imu"
+output_sensor_frame: "sensor_voxgraph"
+
+# IMU--->camera transfer
+# T_base_sensor:
+# - [-0.9908275, -0.0196803, 0.1336922, -0.024]
+# - [ 0.0202159, -0.9997921, 0.0026504, -0.011]
+# - [ 0.1336122,  0.0053288, 0.9910194, -0.131]
+# - [ 0.0,        0.0,       0.0,        1.0]
+
+# (1) Fast数据集对应相机外参
+# (2) 自己录制数据集对应相机外参
+T_base_link_sensor:
+ - [ 0.0008748, -0.0047406,  0.9999884, 1.30441e-05]
+ - [-0.9999681, -0.0079460,  0.0008371, 0.0149225]
+ - [ 0.0079419, -0.9999572, -0.0047474, 0.000316835]
+ - [ 0.0,        0.0,       0.0,        1.0]
+#  - [ 0.99998318, -0.00302186, -0.00495021, -0.0132516]
+#  - [0.00296347,  0.99992645, -0.01176032, -0.00082214]
+#  - [ 0.00498539,  0.01174545,  0.99991859, 0.01535377]
+#  - [ 0.0,        0.0,       0.0,        1.0]
+
+tsdf_voxel_size: 0.05
+tsdf_integrator:
+  truncation_distance: 0.60
+  # 默认值：16.0
+  max_ray_length_m: 16.0
+  use_const_weight: true
+  use_weight_dropoff: true
+  use_sparsity_compensation_factor: true
+  sparsity_compensation_factor: 20.0
+  # integration_order_mode: "sorted"
+
+measurements:
+  submap_registration:
+    enabled: true
+    sampling_ratio: 0.05
+    registration_method: "explicit_to_implicit"
+    information_matrix:
+      x_x:     1.0
+      y_y:     1.0
+      z_z:     1.0
+      yaw_yaw: 1.0
+  odometry:
+    enabled: true
+    information_matrix:
+      x_x:     1.0
+      y_y:     1.0
+      z_z:     2500.0
+      yaw_yaw: 2500.0
+  height:
+    enabled: false
+    information_zz: 2500.0
+
+mesh_min_weight: 2.0
+mesh_use_color: true

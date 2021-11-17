@@ -1,0 +1,25 @@
+<launch>
+  <!--结合VINS-RGBD改动的launch文件-->
+  <param name="use_sim_time" value="true" />
+
+  <include file="$(find vins_estimator)/launch/realsense_color.launch" pass_all_args="true" />
+  <!--arg name="rosbag_path" /-->
+
+
+  <arg name="pointcloud_topic" value="/pose_graph/pointcloud2" />
+  <arg name="odometry_input_topic" value="/vins_estimator/odometry_input_topic" />
+
+  <!--使用voxblox公布的官方数据集进行运行-->
+  <!--arg name="odometry_input_topic" value="/kinect/vrpn_client/estimated_transform" /-->
+  
+  <!--arg name="odometry_topic" value="/kinect/vrpn_client/estimated_transform" /-->
+  <!--remap from="pointcloud_topic" to="/camera/depth_registered/points" /-->
+  <!--arg name="rosbag_skip_first_n_sec" value="5" /-->
+  <arg name="debug_mode" value="false" />
+  <arg name="show_rviz" value="true" />
+  <!--remap from="tf" to="/kinect/vrpn_client/estimated_transform"/-->
+  <!--node pkg="tf" type="static_transform_publisher" name="os1_stuff" args="0 0 0 0 0 1 0 os1_sensor os1_lidar 100" /-->
+
+  <include file="$(find start_process)/launch/voxgraph_data.launch" pass_all_args="true" />
+</launch>
+
