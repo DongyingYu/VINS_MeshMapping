@@ -547,10 +547,10 @@ void process()
                             
                             // std::cout << "cx:   " << cx << "cy:   " << cy << std::endl;
                             // std::cout << "fx:   " << fx << "fy:   " << fy << std::endl;
-
-                            p.r = _image.ptr<uchar>(j)[i*3];
+                            // 点云重建的色彩展示，注意根据重建效果调整；
+                            p.b = _image.ptr<uchar>(j)[i*3];
                             p.g = _image.ptr<uchar>(j)[i*3+1];
-                            p.b = _image.ptr<uchar>(j)[i*3+2];
+                            p.r = _image.ptr<uchar>(j)[i*3+2];
                             // 得到带RGB信息的点云信息
                             // 也是仅对关键帧的稠密点云进行组合并发布
                             tmp->points.push_back(p);                            

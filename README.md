@@ -91,7 +91,9 @@ log file: /home/ipsg/.ros/log/5d51c2b8-589f-11eb-b03f-244bfe4b549b/pose_graph-4*
 <2021-11-17> : 
 > 在制作git仓库值，需要将.catkin_tools一并上传上去，因这包含了最初初始化工作空间时的一些信息，不然为提示奇怪的未定义的错误；
 > 其余子文件夹中的.gitignore文件均进行删除了，不会有影响；
-> github版本未将brief_k10L6.bin上传，在系统运行时要copy一份该文件放与support_files文件夹下；
+> github版本未将brief_k10L6.bin上传，在系统运行时要copy一份该文件放与support_files文件夹下;
+> pose_graph_node.cpp中对于点云重建的颜色效果做了修改，RGB与BGR格式调整;
+> 注意：对于Yolo检测模块，其权重及训练结果文件的加载，在realsense_color_config.yaml文件中进行修改路径;
 
 ```
 ## solve the compile problem
