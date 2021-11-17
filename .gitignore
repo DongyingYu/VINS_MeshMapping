@@ -51,5 +51,4 @@ src/VINS-RGBD/support_files/brief_k10L6.bin
 *.app
 
 .vscode/
-.catkin_tools/
 *.swp      
