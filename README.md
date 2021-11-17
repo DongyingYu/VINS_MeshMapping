@@ -111,8 +111,8 @@ log file: /home/ipsg/.ros/log/5d51c2b8-589f-11eb-b03f-244bfe4b549b/pose_graph-4*
 
 ## reference
 
-[voxgraph_install]: https://github.com/ethz-asl/voxgraph    
-[voxblox_install]: https://voxblox.readthedocs.io/en/latest/pages/Installation.html    
+[voxgraph_install](https://github.com/ethz-asl/voxgraph)  
+[voxblox_install](https://voxblox.readthedocs.io/en/latest/pages/Installation.html)  
 
 
 
