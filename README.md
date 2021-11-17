@@ -88,6 +88,10 @@ log file: /home/ipsg/.ros/log/5d51c2b8-589f-11eb-b03f-244bfe4b549b/pose_graph-4*
 > 修改keyframe()构造函数，因之前保存的位姿图存在一个问题，即保存的rgb格式地图为灰度图，这里单独传入一个rgb color进行后续的位姿图保存使用；
 > 在对彩色图像的ros数据进行解码时，要解码为BGR8格式，保存下来的彩图显示才是正确的；
 
+<2021-11-17> : 
+> 在制作git仓库值，需要将.catkin_tools一并上传上去，因这包含了最初初始化工作空间时的一些信息，不然为提示奇怪的未定义的错误；
+> 其余子文件夹中的.gitignore文件均进行删除了，不会有影响；
+> github版本未将brief_k10L6.bin上传，在系统运行时要copy一份该文件放与support_files文件夹下；
 
 ```
 
