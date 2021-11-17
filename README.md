@@ -94,10 +94,25 @@ log file: /home/ipsg/.ros/log/5d51c2b8-589f-11eb-b03f-244bfe4b549b/pose_graph-4*
 > github版本未将brief_k10L6.bin上传，在系统运行时要copy一份该文件放与support_files文件夹下；
 
 ```
+## solve the compile problem
+```
+> catkin编译的环境被破坏后会导致编译报错，...未定义，解决办法一是按照上述方案中，将完好的.catkin_tools/文件夹一并保存并上传值git仓库；
+  二：参考voxblox、voxgraph中的catkin环境配置方式进行重新初始化；
+  catkin init
+  catkin config --extend /opt/ros/kinetic
+  catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release
+  catkin config --merge-devel
+  wstool init .
+  wstool update
 
+  catkin clean
+  catkin build
+```
 
+## reference
 
-
+[voxgraph_install]: https://github.com/ethz-asl/voxgraph    
+[voxblox_install]: https://voxblox.readthedocs.io/en/latest/pages/Installation.html    
 
 
 
