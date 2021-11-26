@@ -95,6 +95,11 @@ log file: /home/ipsg/.ros/log/5d51c2b8-589f-11eb-b03f-244bfe4b549b/pose_graph-4*
 > pose_graph_node.cpp中对于点云重建的颜色效果做了修改，RGB与BGR格式调整;
 > 注意：对于Yolo检测模块，其权重及训练结果文件的加载，在realsense_color_config.yaml文件中进行修改路径;
 
+<2021-11-26> :
+> 新建分支semantic_rgb_mapping，该分支用以实现使用处理过后的rosbag进行语义地图构建，所做修改：
+(1) VINS-RGBD文件夹下的yaml配置文件的修改，修改节点信息,去噪和yolo检测模块配置文件路径修改；
+(2) pose_graph_node.cpp中添加对语义图像的接收节点，并修改相应的回调函数；
+> 修改skip_dis为0，不然效果很差，修改后，效果符合预期；
 ```
 ## solve the compile problem
 ```
