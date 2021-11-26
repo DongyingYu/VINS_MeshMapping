@@ -28,7 +28,7 @@ sh Denoise
 #save map
 rosservice call /voxgraph_mapper/save_combined_mesh "/home/ipsg/dataset/map_save/101_test.ply"
 rosservice call /voxgraph_mapper/save_combined_mesh "/home/ipsg/1295/VINS_MeshMapping/outdoor_with_opti_1.ply"
-rosservice call /voxgraph_mapper/save_combined_mesh "/home/ipsg/study/VINS_MeshMapping/v_room_test.ply"
+rosservice call /voxgraph_mapper/save_combined_mesh "/home/ipsg/study/VINS_MeshMapping/Normal_semantic.ply"
 # finish map
 rosservice call /voxgraph_mapper/finish_map
 ```

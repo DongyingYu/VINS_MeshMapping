@@ -28,7 +28,7 @@ void readParameters(ros::NodeHandle &n)
 {
     std::string config_file;
     // config_file = readParam<std::string>(n, "config_file");
-    config_file = "/home/ipsg/1295/VINS_MeshMapping/src/VINS-RGBD/config/realsense/realsense_color_config.yaml";
+    config_file = "/home/ipsg/study/VINS_MeshMapping/src/VINS-RGBD/config/realsense/realsense_color_config.yaml";
     cv::FileStorage fsSettings(config_file, cv::FileStorage::READ);
     if(!fsSettings.isOpened())
     {

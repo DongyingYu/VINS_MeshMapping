@@ -6,7 +6,7 @@ Denoise*
 src/VINS-RGBD/support_files/brief_k10L6.bin
 # Prerequisites
 *.d
-
+*.ply
 # Compiled Object files
 *.slo
 *.lo

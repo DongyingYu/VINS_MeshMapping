@@ -49,6 +49,7 @@ double get_psnr(Mat image_ref, Mat image_obj)
 
  void Img_callback(const sensor_msgs::ImageConstPtr &line_msg)
 {
+	ROS_INFO("Enter into thr blur function. ");
     cv_bridge::CvImageConstPtr lineImg = cv_bridge::toCvCopy(line_msg, sensor_msgs::image_encodings::RGB8);
     cv::Mat frame = (lineImg->image).clone();
 	cv::GaussianBlur(frame, frame, cv::Size(3, 3), 3, 3);

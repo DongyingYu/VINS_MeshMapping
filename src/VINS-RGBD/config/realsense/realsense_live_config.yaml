@@ -1,10 +1,16 @@
 %YAML:1.0
 
 #common parameters
-imu_topic: "/camera/imu"
-image_topic: "/camera/color/image_raw"
+# imu_topic: "/camera/imu"
+# image_topic: "/camera/color/image_raw"
+# depth_topic: "/camera/aligned_depth_to_color/image_raw"
 
-depth_topic: "/camera/aligned_depth_to_color/image_raw"
+imu_topic: "/imu0"
+image_topic: "/cam0/image_raw"
+depth_topic: "/cam1/image_raw"
+
+image_semantic_topic: "/semantic/image_raw"
+
 #output_path: "/output/"
 # 保存vio及经过闭环优化的位姿估计数据
 output_path: "/home/ipsg/dataset/"
@@ -100,7 +106,7 @@ g_norm: 9.805       # gravity magnitude
 loop_closure: 1                    # start loop closure
 fast_relocalization: 1             # useful in real-time and large project
 load_previous_pose_graph: 0        # load and reuse previous pose graph; load from 'pose_graph_save_path'
-#pose_graph_save_path: "/home/fb/output/pose_graph/" # save and load path
+
 pose_graph_save_path: "/home/ipsg/study/data_output/"
 #unsynchronization parameters
 estimate_td: 1                      # online estimate time offset between camera and imu

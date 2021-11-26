@@ -33,7 +33,7 @@ using namespace std;
 
 typedef pcl::PointXYZRGB PointT;
 typedef pcl::PointCloud<PointT> PointCloud;
-queue<sensor_msgs::ImageConstPtr> image_buf,depth_buf;
+queue<sensor_msgs::ImageConstPtr> image_buf,depth_buf,image_semantic_buf;
 queue<sensor_msgs::PointCloudConstPtr> point_buf;
 queue<nav_msgs::Odometry::ConstPtr> pose_buf;
 queue<Eigen::Vector3d> odometry_buf;
@@ -108,6 +108,8 @@ void new_sequence()
         image_buf.pop();
     while(!depth_buf.empty())
         depth_buf.pop();
+    while (!image_semantic_buf.empty())
+        image_semantic_buf.pop();
     while(!point_buf.empty())
         point_buf.pop();
     while(!pose_buf.empty())
@@ -117,7 +119,8 @@ void new_sequence()
     m_buf.unlock();
 }
 
-void image_callback(const sensor_msgs::ImageConstPtr &image_msg, const sensor_msgs::ImageConstPtr &depth_msg)
+void image_callback(const sensor_msgs::ImageConstPtr &image_msg, const sensor_msgs::ImageConstPtr &depth_msg, 
+                    const sensor_msgs::ImageConstPtr &image_semantic_msg)
 {
     //ROS_WARN("image_callback!1");
     if(!LOOP_CLOSURE)
@@ -125,6 +128,7 @@ void image_callback(const sensor_msgs::ImageConstPtr &image_msg, const sensor_ms
     m_buf.lock();
     image_buf.push(image_msg);
     depth_buf.push(depth_msg);
+    image_semantic_buf.push(image_semantic_msg);
     m_buf.unlock();
     //printf(" image time %f \n", image_msg->header.stamp.toSec());
 
@@ -321,6 +325,10 @@ void extrinsic_callback(const nav_msgs::Odometry::ConstPtr &pose_msg)
     m_process.unlock();
 }
 
+// void semantic_image_callback(const sensor_msgs::ImageConstPtr &semantic_image_msg){
+
+// }
+
 void process()
 {
     if (!LOOP_CLOSURE)
@@ -329,6 +337,7 @@ void process()
     {
         sensor_msgs::ImageConstPtr image_msg = NULL;
         sensor_msgs::ImageConstPtr depth_msg = NULL;
+        sensor_msgs::ImageConstPtr image_semantic_msg = NULL;
         sensor_msgs::PointCloudConstPtr point_msg = NULL;
         nav_msgs::Odometry::ConstPtr pose_msg = NULL;
         // find out the messages with same time stamp
@@ -357,12 +366,14 @@ void process()
                 {
                     image_buf.pop();
                     depth_buf.pop();
+                    image_semantic_buf.pop();
                 }
                 image_msg = image_buf.front();
                 depth_msg = depth_buf.front();
+                image_semantic_msg = image_semantic_buf.front();
                 image_buf.pop();
                 depth_buf.pop();
-
+                image_semantic_buf.pop();
 
                 while (point_buf.front()->header.stamp.toSec() < pose_msg->header.stamp.toSec())
                     point_buf.pop();
@@ -445,6 +456,20 @@ void process()
                 return;
             }
             cv::Mat _image = cv_ptrRGB->image;
+
+            cv_bridge::CvImageConstPtr semantic_ptr;
+            try
+            {
+                // 转换为BGR8这中格式，色彩显示才是对的；
+                semantic_ptr = cv_bridge::toCvShare(image_semantic_msg,sensor_msgs::image_encodings::BGR8);
+            }
+            catch (cv_bridge::Exception& e)
+            {
+                ROS_ERROR("cv_bridge exception: %s", e.what());
+                return;
+            }
+            cv::Mat semantic_image = semantic_ptr->image;  
+
             // int r_size = depth.rows;
             // int c_size = depth.cols;
             // cv_bridge::CvImageConstPtr cv_ptrD;
@@ -548,9 +573,12 @@ void process()
                             // std::cout << "cx:   " << cx << "cy:   " << cy << std::endl;
                             // std::cout << "fx:   " << fx << "fy:   " << fy << std::endl;
                             // 点云重建的色彩展示，注意根据重建效果调整；
-                            p.b = _image.ptr<uchar>(j)[i*3];
-                            p.g = _image.ptr<uchar>(j)[i*3+1];
-                            p.r = _image.ptr<uchar>(j)[i*3+2];
+                            // p.b = _image.ptr<uchar>(j)[i*3];
+                            // p.g = _image.ptr<uchar>(j)[i*3+1];
+                            // p.r = _image.ptr<uchar>(j)[i*3+2];
+                            p.b = semantic_image.ptr<uchar>(j)[i*3];
+                            p.g = semantic_image.ptr<uchar>(j)[i*3+1];
+                            p.r = semantic_image.ptr<uchar>(j)[i*3+2];
                             // 得到带RGB信息的点云信息
                             // 也是仅对关键帧的稠密点云进行组合并发布
                             tmp->points.push_back(p);                            
@@ -701,7 +729,7 @@ int main(int argc, char **argv)
     std::cout << "fx test:  " << fx << "fy test:  " << fy << std::endl;
 
     LOOP_CLOSURE = fsSettings["loop_closure"];
-    std::string IMAGE_TOPIC,DEPTH_TOPIC;
+    std::string IMAGE_TOPIC,DEPTH_TOPIC,IMAGE_SEMANTIC_TOPIC;
     int LOAD_PREVIOUS_POSE_GRAPH;
     // prepare for loop closure (load vocabulary, set topic, etc)
     if (LOOP_CLOSURE)
@@ -737,6 +765,7 @@ int main(int argc, char **argv)
 
         fsSettings["image_topic"] >> IMAGE_TOPIC;
         fsSettings["depth_topic"] >> DEPTH_TOPIC;
+        fsSettings["image_semantic_topic"] >> IMAGE_SEMANTIC_TOPIC;
         fsSettings["pose_graph_save_path"] >> POSE_GRAPH_SAVE_PATH;
         fsSettings["output_path"] >> VINS_RESULT_PATH;
         fsSettings["save_image"] >> DEBUG_IMAGE;
@@ -782,11 +811,15 @@ int main(int argc, char **argv)
     //ros::Subscriber sub_image = n.subscribe(IMAGE_TOPIC, 2000, image_callback);
     message_filters::Subscriber<sensor_msgs::Image> sub_image(n, IMAGE_TOPIC, 1);
     message_filters::Subscriber<sensor_msgs::Image> sub_depth(n, DEPTH_TOPIC, 1);
+    message_filters::Subscriber<sensor_msgs::Image> sub_image_semantic(n, IMAGE_SEMANTIC_TOPIC, 1);
     //message_filters::TimeSynchronizer<sensor_msgs::Image, sensor_msgs::Image> sync(sub_image, sub_depth, 2000);
     // fit fisheye camera
-    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image,sensor_msgs::Image> syncPolicy;
-    message_filters::Synchronizer<syncPolicy> sync(syncPolicy(10), sub_image, sub_depth);
-    sync.registerCallback(boost::bind(&image_callback, _1, _2));
+    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image,sensor_msgs::Image,sensor_msgs::Image> syncPolicy;
+    message_filters::Synchronizer<syncPolicy> sync(syncPolicy(10), sub_image, sub_depth,sub_image_semantic);
+    sync.registerCallback(boost::bind(&image_callback, _1, _2,_3));
+
+    // subscribe raw rgb_semantic
+    // ros::Subscriber sub_semantic_image = n.subscribe(IMAGE_SEMANTIC_TOPIC, 2000, semantic_image_callback);
     
     //get keyframe_pose(Ps and Rs), store in pose_buf (marginalization_flag == 0)
     ros::Subscriber sub_pose = n.subscribe("/vins_estimator/keyframe_pose", 2000, pose_callback);
